@@ -1,10 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+
 import "./Access.sol";
 import "./MerkleClaim.sol";
 
 contract Vault is Access, MerkleClaim {
+
+
+    constructor(address[] memory _owners, uint256 _threshold)
+        MerkleClaim(_owners, _threshold)
+    {}
+
     mapping(address => uint256) public balances;
 
     mapping(uint256 => Transaction) public transactions;
@@ -75,7 +83,7 @@ contract Vault is Access, MerkleClaim {
         bytes32 messageHash,
         bytes memory signature
     ) external pure returns (bool) {
-        return MerkleProof.recover(messageHash, signature) == signer;
+        return ECDSA.recover(messageHash, signature) == signer;
     }
 
     receive() external payable {
