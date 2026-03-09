@@ -1,66 +1,21 @@
-## Foundry
+# EvictionVault Smart Contract - Security Refactor & Modular Architecture
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+## Overview
 
-Foundry consists of:
+This document details the comprehensive security refactoring and architectural improvements made to the **EvictionVault** smart contract. The original monolithic contract has been decomposed into a modular, secure architecture using **OpenZeppelin's AccessControl** for role-based permission management.
 
-- **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
-- **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
-- **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
-- **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+---
 
-## Documentation
+## Critical Vulnerabilities Fixed
 
-https://book.getfoundry.sh/
+### 1. 🔴 `setMerkleRoot()` — Callable by Anyone
+**Severity:** CRITICAL  
+**Original Issue:** No access control; any address could set the merkle root, allowing unauthorized claim verification.
 
-## Usage
+**Fix:**
+```solidity
+function setMerkleRoot(bytes32 root) external onlyRole(MERKLE_SETTER_ROLE) {
+    merkleRoot = root;
+    emit MerkleRootSet(root);
+}
 
-### Build
-
-```shell
-$ forge build
-```
-
-### Test
-
-```shell
-$ forge test
-```
-
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
